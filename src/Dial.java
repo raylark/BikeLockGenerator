@@ -2,7 +2,7 @@ import java.util.HashSet;
 import java.util.TreeSet;
 
 public class Dial {
-    final static int SIZE = 10;
+    static int size = 5;
     private int position;
     private TreeSet<Character> letters;
     private HashSet<String> possibleWords;
@@ -14,7 +14,7 @@ public class Dial {
     }
 
     public int getSize() {
-        return SIZE;
+        return size;
     }
 
     public int getPosition() {

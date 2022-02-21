@@ -1,7 +1,4 @@
-import com.sun.source.tree.Tree;
-
 import java.io.File;
-import java.sql.Array;
 import java.util.*;
 
 public class BikeLock {
@@ -12,14 +9,85 @@ public class BikeLock {
     }
 
     public static void main(String args[]) {
-        File file = new File(args[0]);
-        int numDials = Integer.parseInt(args[1]);
+        boolean isPlaying = true;
+        //Game loop
+        while(isPlaying) {
+            System.out.println("\n~~~~Welcome to the Bike Lock Generator~~~~\n");
+            boolean isBadInput = true;
+            int numDials = 0;
+            int dialSize = 0;
+            //Retrieve number of dials from user
+            while (isBadInput) {
+                System.out.println("Enter the number of dials (1-26): ");
+                Scanner input = new Scanner(System.in);
+                String temp = input.nextLine();
+                try {
+                    numDials = Integer.parseInt(temp);
+                    if (numDials <= 26 && numDials >= 1) {
+                        isBadInput = false;
+                    }
+                    else {
+                        throw new NumberFormatException();
+                    }
+                } catch (NumberFormatException e) {
+                    System.out.println("[Error] - Must enter a number 1-26. Try again.\n");
+                }
+            }
+            isBadInput = true;
+            while(isBadInput) {
+                System.out.println("Enter the number of letters per dial (1-26): ");
+                Scanner input = new Scanner(System.in);
+                String temp = input.nextLine();
+                try {
+                    dialSize = Integer.parseInt(temp);
+                    if (dialSize <= 26 && dialSize >= 1) {
+                        isBadInput = false;
+                    }
+                    else {
+                        throw new NumberFormatException();
+                    }
+                } catch (NumberFormatException e) {
+                    System.out.println("[Error] - Must enter a number 1-26. Try again.\n");
+                }
+            }
 
-        Dictionary dictionary = new Dictionary(file, numDials);
-        System.out.println("Total " + numDials + "-letter words: " + dictionary.getDictionary().size());
-        BikeLock bikeLock = new BikeLock();
-        bikeLock.dials = bikeLock.getAllDials(dictionary, numDials);
-        System.out.println(bikeLock.toString());
+            Dial.size = dialSize;
+            File file = new File("dictionary.txt");
+            Dictionary dictionary = new Dictionary(file, numDials);
+
+            System.out.println();
+            System.out.println("Number of " + numDials + "-letter words in the dictionary: " + dictionary.getDictionary().size());
+
+            BikeLock bikeLock = new BikeLock();
+            bikeLock.dials = bikeLock.getAllDials(dictionary, numDials);
+            System.out.println(bikeLock);
+
+            System.out.println();
+            isBadInput = true;
+            while(isBadInput) {
+                System.out.println("Would you like to view those words? (Y/N): ");
+                Scanner input = new Scanner(System.in);
+                String temp = input.nextLine();
+                try {
+                    if (temp.charAt(0) == 'Y' || temp.charAt(0) == 'y') {
+                        System.out.println(bikeLock.dials.get(bikeLock.dials.size()-1).getPossibleWords());
+                        isBadInput = false;
+                    }
+                    else if (temp.charAt(0) == 'N' || temp.charAt(0) == 'n') {
+                        isBadInput = false;
+                    }
+                    else {
+                        throw new NumberFormatException();
+                    }
+                } catch (NumberFormatException e) {
+                    System.out.println("[Error] - Must enter 'Y' or 'N'. Try again.\n");
+                }
+            }
+
+            System.out.println("Enter anything to try again...: ");
+            Scanner input = new Scanner(System.in);
+            input.next();
+        }
     }
 
     public ArrayList<Dial> getAllDials(Dictionary dictionary, Integer numDials) {
@@ -56,8 +124,8 @@ public class BikeLock {
 
         //Check if there are enough dial-letter candidates
         //IF NOT - fill extra spots, use as best letters
-        if (usedLetters.size() < Dial.SIZE) {
-            int extraSpots = Dial.SIZE - usedLetters.size();
+        if (usedLetters.size() < Dial.size) {
+            int extraSpots = Dial.size - usedLetters.size();
             usedLetters.addAll(getFillerLetters(usedLetters, extraSpots));
             bestLetters.addAll(usedLetters);
         }
@@ -94,18 +162,6 @@ public class BikeLock {
         return fillerLetters;
     }
 
-    @Override
-    public String toString() {
-        StringBuilder str = new StringBuilder();
-        for (Dial d : dials) {
-            str.append(d.toString());
-        }
-        //Append the completely filtered (last dial) list of possible words.
-        str.append("Total word combos: ");
-        str.append(dials.get(dials.size()-1).getPossibleWords().size());
-        return str.toString();
-    }
-
     private TreeSet<Character> getBestLetters(HashMap<Character, HashSet<String>> letterMap) {
         TreeSet<Character> bestLetters = new TreeSet<>();
         TreeMap<Integer, Character> letterBySize = new TreeMap<>();
@@ -117,7 +173,7 @@ public class BikeLock {
         Collection extractedWordBanks = letterBySize.descendingMap().values();
         Iterator it = extractedWordBanks.iterator();
 
-        for (int i = 0; i < Dial.SIZE; i++) {
+        for (int i = 0; i < Dial.size; i++) {
             if (it.hasNext()) {
                 bestLetters.add((Character) it.next());
             }
@@ -125,4 +181,15 @@ public class BikeLock {
         return bestLetters;
     }
 
+    @Override
+    public String toString() {
+        StringBuilder str = new StringBuilder();
+        for (Dial d : dials) {
+            str.append(d.toString());
+        }
+        //Append the completely filtered (last dial) list of possible words.
+        str.append("Number your bike lock can make: ");
+        str.append(dials.get(dials.size()-1).getPossibleWords().size());
+        return str.toString();
+    }
 }
