@@ -1,0 +1,10 @@
+arch
+babe
+deck
+earl
+full
+hill
+isle
+jack
+kill
+loop
