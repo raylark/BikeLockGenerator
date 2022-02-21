@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="BikeLock:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/BikeLock_jar</output-path>
+    <root id="archive" name="BikeLock.jar">
+      <element id="module-output" name="BikeLock" />
+    </root>
+  </artifact>
+</component>
